@@ -1,0 +1,162 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "API de Puntos WiFi",
+    "description": "Una API para gestionar puntos de acceso WiFi.",
+    "version": "1.0"
+  },
+  "basePath": "/",
+  "schemes": ["http"],
+  "paths": {
+    "/wifi_points/all": {
+      "get": {
+        "summary": "Obtener todos los puntos de acceso WiFi",
+        "responses": {
+          "200": {
+            "description": "Una lista de todos los puntos WiFi"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/api/wifi_points/paginated": {
+      "get": {
+        "summary": "Listar puntos de acceso WiFi de forma paginada",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 1
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de puntos WiFi"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/api/wifi_points/colonia": {
+      "get": {
+        "summary": "Obtener puntos de acceso WiFi por colonia con paginación",
+        "parameters": [
+          {
+            "name": "colonia",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 1
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de puntos WiFi filtrados por colonia"
+          },
+          "400": {
+            "description": "Parámetro colonia es requerido"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/api/wifi_points/proximity_search": {
+      "get": {
+        "summary": "Búsqueda de puntos de acceso por proximidad",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "type": "number",
+            "format": "float"
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": true,
+            "type": "number",
+            "format": "float"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 1
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Puntos WiFi cercanos a la ubicación dada"
+          },
+          "400": {
+            "description": "Los parámetros Lat y Lng son requeridos"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/api/wifi_points/{point_id}": {
+      "get": {
+        "summary": "Obtener un punto de acceso específico por su ID",
+        "parameters": [
+          {
+            "name": "point_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalles del punto WiFi solicitado"
+          },
+          "404": {
+            "description": "Punto WiFi no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    }
+  }
+}
