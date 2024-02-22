@@ -1,60 +1,58 @@
 from pymongo import GEOSPHERE
-from pymongo.errors import CollectionInvalid
+from pymongo.errors import CollectionInvalid, BulkWriteError
 import pandas as pd
-from pymongo.errors import BulkWriteError
-from dotenv import load_dotenv
 import os
+import logging
+
+# Configura el logging
+logging.basicConfig(level=logging.INFO)
 
 def load_data_to_mongodb(csv_file_path, db):
-    load_dotenv()
+    """
+    Carga datos de un archivo CSV a MongoDB y crea un índice geoespacial.
+
+    :param csv_file_path: Ruta al archivo CSV.
+    :param db: Instancia de la base de datos de MongoDB.
+    :return: Un diccionario con el recuento de documentos insertados, si se creó el índice y errores si ocurren.
+    """
     collection_name = os.getenv('MONGO_COLLECTION_NAME')
+    if not collection_name:
+        logging.error("El nombre de la colección no está especificado en las variables de entorno.")
+        raise ValueError("El nombre de la colección es requerido.")
+
     try:
         db.create_collection(collection_name)
-        print(f"Colección '{collection_name}' creada exitosamente.")
+        logging.info(f"Colección '{collection_name}' creada exitosamente.")
     except CollectionInvalid:
-        print(f"La colección '{collection_name}' ya existe.")
-        return CollectionInvalid
-        
-    collection = db[os.getenv('MONGO_COLLECTION_NAME')]
+        logging.info(f"La colección '{collection_name}' ya existe.")
+        return
 
-    # Lectura del archivo CSV
-    data = pd.read_csv(csv_file_path)
-
-    data['longitud'] = pd.to_numeric(data['longitud'], errors='coerce')
-    data['latitud'] = pd.to_numeric(data['latitud'], errors='coerce')
-    data['longitud'] = data['longitud'].to_dict()
-    data['latitud'] = data['latitud'].to_dict()
-
-    data = data.dropna(subset=['latitud', 'longitud'])
-    # Validar y filtrar los datos para asegurar que las coordenadas están dentro de los rangos válidos
-    data = data[(data['latitud'].between(-90, 90)) & (data['longitud'].between(-180, 180))]
-
-    # creamos los Ajustamos el formato a formato GeoJSON
-    data['location'] = data.apply(lambda row: {'type': 'Point', 'coordinates': [row['longitud'], row['latitud']]}, axis=1)
-    
-    # Conversión del DataFrame a un formato de diccionario para su inserción en MongoDB
-    data_dict = data.to_dict("records")
-
-    response = {
-        "inserted_count": 0,
-        "index_created": False,
-        "error": None
-    }
+    collection = db[collection_name]
 
     try:
-        # Inserción de los datos en MongoDB
-        result = collection.insert_many(data_dict)
-        response["inserted_count"] = len(result.inserted_ids)      
-        try:
-            # Crear un índice 2dsphere para consultas geoespaciales
-            resp = collection.create_index([("location", GEOSPHERE)])
-            response["index_created"] = True
-        except Exception as e:
-            print({"error":e})
-            
-    except BulkWriteError as bwe:
-        response["error"] = "Error al insertar los documentos: " + str(bwe.details)
-    except Exception as e:
-        response["error"] = "Ocurrió un error: " + str(e)
+        data = pd.read_csv(csv_file_path)
+        data['latitud'] = pd.to_numeric(data['latitud'], errors='coerce')
+        data['longitud'] = pd.to_numeric(data['longitud'], errors='coerce')
+        data.dropna(subset=['latitud', 'longitud'], inplace=True)
+        
+        data = data[(data['latitud'].between(-90, 90)) & (data['longitud'].between(-180, 180))]
 
-    return response
+        # Convierte los datos a formato GeoJSON.
+        data['location'] = data.apply(lambda row: {'type': 'Point', 'coordinates': [row['longitud'], row['latitud']]}, axis=1)
+
+        # Inserta los datos en la colección.
+        result = collection.insert_many(data.to_dict('records'))
+        inserted_count = len(result.inserted_ids)
+        logging.info(f"Insertados {inserted_count} documentos en '{collection_name}'.")
+
+        # Crea un índice 2dsphere si aún no existe.
+        if 'location' not in collection.index_information():
+            collection.create_index([("location", GEOSPHERE)])
+            logging.info("Índice 2dsphere creado exitosamente en 'location'.")
+        return {"inserted_count": inserted_count, "index_created": True, "error": None}
+    except BulkWriteError as bwe:
+        logging.error(f"Error al insertar los documentos: {bwe.details}")
+        return {"inserted_count": 0, "index_created": False, "error": str(bwe.details)}
+    except Exception as e:
+        logging.error(f"Ocurrió un error: {e}")
+        return {"inserted_count": 0, "index_created": False, "error": str(e)}
