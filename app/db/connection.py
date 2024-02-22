@@ -1,6 +1,8 @@
 from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError
+from dotenv import load_dotenv
 import os
+load_dotenv()
 
 class MongoDB:
     def __init__(self, uri):
@@ -19,7 +21,7 @@ class MongoDB:
             raise
 
     def get_db(self):
-        db_name=os.getenv('MONGO_DB_NAME', 'wifi_points_db')
+        db_name=os.getenv('MONGO_DB_NAME')
         """Obtiene una referencia a la base de datos."""
         if not self.client:
             raise Exception("La conexión a MongoDB no ha sido establecida. Llamar primero a connect().")
@@ -27,8 +29,8 @@ class MongoDB:
         return self.db
 
 # Uso de la clase MongoDB
-mongo_uri = os.getenv('MONGO_URI','mongodb+srv://admin:admin@wifi.otc2thm.mongodb.net/' )
-mongo_db_name = os.getenv('MONGO_DB_NAME', 'wifi_points_db')
+mongo_uri = os.getenv('MONGO_URI')
+mongo_db_name = os.getenv('MONGO_DB_NAME')
 
 mongo_client = MongoDB(mongo_uri)
 mongo_client.connect()
