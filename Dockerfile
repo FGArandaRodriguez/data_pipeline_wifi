@@ -9,6 +9,7 @@ WORKDIR /app
 # Copia el archivo de requisitos primero para aprovechar la caché de Docker
 COPY requirements.txt .
 
+
 # Instala las dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 

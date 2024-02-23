@@ -29,6 +29,7 @@ def create_app():
     
     @app.route('/swagger.json')
     def swagger():
+       CORS(app)
        dir_path = os.path.dirname(os.path.realpath(__file__))
        swagger_path = os.path.join(dir_path, 'swagger.json')
        with open(swagger_path, 'r') as f:

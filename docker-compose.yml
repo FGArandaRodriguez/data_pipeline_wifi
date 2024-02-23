@@ -14,3 +14,11 @@ services:
     - .env
     depends_on:
       - mongo
+
+  pipeline:
+    build: .
+    environment:
+      - .env
+    volumes:
+      - .:/app
+    entrypoint: ["python", "initialize_db.py"]
