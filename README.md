@@ -16,20 +16,17 @@ Debemos de tener instalado lo siguiente:
 
 ### Configuración Inicial
 1. **Crear un Entorno Virtual**:
-   ```sh
+```sh
    python -m venv .venv
-   ```
+```
 1.- Activar el entorno virtual:
 ```sh
     En Windows: .venv\Scripts\activate
     En Unix o MacOS: source .venv/bin/activate
-
-    Instalar Dependencias:
-    Después de activar el entorno virtual, instala los paquetes requeridos usando:
 ```
     Instalar Dependencias:
 Después de activar el entorno virtual, instalamos los paquetes requeridos usando:
-  ```sh
+```sh
   pip install -r requirements.txt
 ```
 2.- Variables de Entorno:
@@ -45,10 +42,13 @@ MONGO_DB_NAME=wifi_points_db
 MONGO_COLLECTION_NAME=wifi_points
 ```
 ### Ejecución del Pipeline de Datos
-Para cargar los datos en la base de datos, ejecuta el script initialize_db.py:
+Para cargar los datos en la base de datos, se puede hacer de dos maneras, MANUAL Y AUTOMÁTICA, si se desea hacer MANUAL
+debemos ejecutar el script initialize_db.py:
 ```sh
 python initialize_db.py
 ```
+
+De otra forma cuando corramos la imagen de docker, se realizará automáticamente la instalación de bibliotecas y la ejecución de nuestro pipeline.
 
 ### Uso de la API
 La API proporciona varios endpoints para interactuar con los datos de puntos de acceso WiFi:
@@ -89,6 +89,7 @@ Este proyecto cuenta con documentación en código y por medio de Swagger. por l
 ```sh
 localhost:5000/swagger
 ```
+![image](https://github.com/FGArandaRodriguez/data_pipeline_wifi/assets/37637850/54fd9166-75a0-479f-b436-097013a67f75)
 
 
 
