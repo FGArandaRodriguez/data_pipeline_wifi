@@ -24,7 +24,7 @@ Debemos de tener instalado lo siguiente:
     En Windows: .venv\Scripts\activate
     En Unix o MacOS: source .venv/bin/activate
 ```
-    Instalar Dependencias:
+###Instalar Dependencias:
 Después de activar el entorno virtual, instalamos los paquetes requeridos usando:
 ```sh
   pip install -r requirements.txt
@@ -58,7 +58,7 @@ La API proporciona varios endpoints para interactuar con los datos de puntos de 
     GET /wifi_points/proximity_search: Búsqueda de puntos de acceso por proximidad.
     GET /wifi_points/<point_id>: Obtiene un punto de acceso específico por su ID.
 
-### Para ejecutar la aplicación Flask, utilizaremos el siguiente comando:
+### Para ejecutar la aplicación Flask manualmente (sin docker), utilizaremos el siguiente comando:
 ```sh
 flask run
 ```
