@@ -5,7 +5,7 @@ import os
 import logging
 
 # Carga las variables de entorno desde el archivo .env
-load_dotenv()
+load_dotenv(override=True)
 
 class MongoDB:
     def __init__(self, uri):

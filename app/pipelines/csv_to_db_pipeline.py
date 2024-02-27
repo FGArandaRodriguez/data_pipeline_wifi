@@ -3,6 +3,9 @@ from pymongo.errors import CollectionInvalid, BulkWriteError
 import pandas as pd
 import os
 import logging
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 # Configura el logging
 logging.basicConfig(level=logging.INFO)

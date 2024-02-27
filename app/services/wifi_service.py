@@ -10,7 +10,7 @@ import os
 import logging
 from ..db.connection import mongo_client
 # Cargar variables de entorno para acceder a configuraciones sensibles y específicas del entorno.
-load_dotenv()
+load_dotenv(override=True)
 # Configuración básica del logging para registrar información importante y errores.
 logging.basicConfig(level=logging.INFO)
 
