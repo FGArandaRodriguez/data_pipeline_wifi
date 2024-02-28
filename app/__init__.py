@@ -18,10 +18,7 @@ def create_app():
     swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
-    config={
-        'app_name': "Sample API"
-    }
-    )
+    config={'app_name': "Wifi points"})
 
     from .api.routes import api_blueprint
     app.register_blueprint(api_blueprint, url_prefix="/api")
@@ -29,7 +26,7 @@ def create_app():
     
     @app.route('/swagger.json')
     def swagger():
-       CORS(app)
+       
        dir_path = os.path.dirname(os.path.realpath(__file__))
        swagger_path = os.path.join(dir_path, 'swagger.json')
        with open(swagger_path, 'r') as f:
